@@ -19,14 +19,23 @@ mc_targeted_mod = os.path.join(mc_mods, "Quark-3.2-358.jar")
 
 @dataclass
 class Matcher:
-    def test(self, source: str, target: str):
+    def test(self, file_info: zipfile.ZipInfo) -> bool:
         pass
 
 
-class CrystalMatcher(Matcher):
-    def test(self, mod_file: str, pack_file: str):
-        return re.match(r"assets.quark.textures.block.+?corundum\.png", mod_file) is not None and pack_file.endswith(
-            "amethyst_block.png")
+@dataclass
+class RegexMatcher(Matcher):
+    regex: str
+
+    def test(self, file_info: zipfile.ZipInfo) -> bool:
+        return re.match(self.regex, file_info.filename) is not None
+
+@dataclass
+class EndingMatcher(Matcher):
+    end: str
+
+    def test(self, file_info: zipfile.ZipInfo) -> bool:
+        return file_info.filename.endswith(self.end)
 
 
 @dataclass
@@ -43,15 +52,15 @@ class MatchHueEditor(Editor):
         mod_image = Image.open(mod_file).convert("HSV")
         average_color = zsil_colors.average_color(mod_image)
         tosave = zsil_coolstuff.shift_bands_towards(Image.open(pack_file).convert("HSV"), average_color)
-        # print(average_color, zsil_colors.average_color(tosave))
         saveto = os.path.join(mc_generated_pack, mod_file_info.filename)
         os.makedirs(os.path.split(saveto)[0], exist_ok=True)
         tosave.convert("RGBA").save(saveto)
 
 
 class Rule:
-    def __init__(self, matcher: Matcher, editor: type(Editor)):
-        self.matcher = matcher
+    def __init__(self, mod_matcher: Matcher, pack_matcher: Matcher, editor: type(Editor)):
+        self.mod_matcher = mod_matcher
+        self.pack_matcher = pack_matcher
         self.editor = editor(self)
 
     def run(self):
@@ -59,15 +68,18 @@ class Rule:
             with zipfile.ZipFile(mc_targeted_mod, mode="r") as mod_jar:
                 for mod_file_info in mod_jar.filelist:
                     for pack_file_info in pack_jar.filelist:
-                        if self.matcher.test(mod_file_info.filename, pack_file_info.filename):
+                        if self.mod_matcher.test(mod_file_info) and self.pack_matcher.test(pack_file_info):
                             with pack_jar.open(pack_file_info.filename) as pack_file:
                                 with mod_jar.open(mod_file_info.filename) as mod_file:
                                     self.editor.edit(mod_file_info, pack_file_info, mod_file, pack_file)
 
 
 rules = [
-    Rule(CrystalMatcher(), MatchHueEditor)
-
+    Rule(
+        RegexMatcher(r"assets.quark.textures.block.+?corundum\.png"),
+        EndingMatcher("amethyst_block.png"),
+        MatchHueEditor
+    ),
 ]
 
 
