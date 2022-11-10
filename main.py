@@ -80,6 +80,11 @@ rules = [
         EndingMatcher("amethyst_block.png"),
         MatchHueEditor
     ),
+    Rule(
+        RegexMatcher(r"assets.quark.textures.block.+?corundum_cluster\.png"),
+        EndingMatcher("amethyst_cluster.png"),
+        MatchHueEditor
+    ),
 ]
 
 
