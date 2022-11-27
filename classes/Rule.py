@@ -4,6 +4,7 @@ from typing import Optional
 from typing.io import IO
 
 from classes.Matcher import Matcher
+from misc import get_zip_assets
 
 
 class Rule:
@@ -21,8 +22,8 @@ class Rule:
         import settings
         with zipfile.ZipFile(settings.mc_targeted_mod, mode="r") as mod_jar, zipfile.ZipFile(settings.mc_targeted_pack,
                                                                                              mode="r") as pack_zip:
-            for mod_file_info in mod_jar.filelist:
-                for pack_file_info in pack_zip.filelist:
+            for mod_file_info in get_zip_assets(mod_jar):
+                for pack_file_info in get_zip_assets(pack_zip):
                     if self.mod_matcher.test(mod_file_info) and self.pack_matcher.test(pack_file_info):
                         for suffix, editor in [
                             ("", self.editor),

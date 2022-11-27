@@ -7,6 +7,7 @@ import zipfile
 from tqdm import tqdm
 
 import settings
+from misc import get_zip_assets
 
 
 class Matcher:
@@ -36,7 +37,7 @@ class Matcher:
             (settings.mc_targeted_pack, "pack_prep"),
         ]:
             with zipfile.ZipFile(zip_dir, mode="r") as zip_file:
-                for file_info in tqdm(zip_file.filelist, desc=f'Doing {method_name.replace("_", " ")}'):
+                for file_info in tqdm(get_zip_assets(zip_file), desc=f'Doing {method_name.replace("_", " ")}'):
                     with zip_file.open(file_info.filename) as file:
                         for matcher in matchers:
                             getattr(matcher, method_name)(file_info, file)
