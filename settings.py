@@ -6,6 +6,7 @@ from classes.Rule import Rule
 
 mc_root = r"C:\Users\Zach\Twitch\Minecraft\Instances\5 - 1.18.2"
 resource_pack_name = r"StylizedResourcePack_x256.zip"
+vanilla_mc_version_jar = r'C:\Users\Zach\AppData\Roaming\.minecraft\versions\1.18.2\1.18.2.jar'
 
 rules = [
     Rule(

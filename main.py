@@ -1,9 +1,9 @@
 import settings
+from classes.Rule import Rule
 
 
 def main() -> None:
-    for rule in settings.rules:
-        rule.run()
+    Rule.process_all(settings.rules)
     exit()
 
 

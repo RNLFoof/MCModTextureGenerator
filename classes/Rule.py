@@ -33,6 +33,18 @@ class Rule:
                                     mod_filename, pack_filename, mod_file, pack_file):
                                 editor.edit(mod_filename, pack_filename, mod_file, pack_file)
 
+    @staticmethod
+    def process_all(rules):
+        from classes.Matcher import Matcher
+
+        Matcher.get_all_matches(
+            [rule.pack_matcher for rule in rules] +
+            [rule.mod_matcher for rule in rules]
+        )
+
+        for rule in rules:
+            rule.run()
+
 
 class ImagesContextManager:
     def __init__(self, mod_file_info: zipfile.ZipInfo, pack_file_info: zipfile.ZipInfo, mod_jar: zipfile,
