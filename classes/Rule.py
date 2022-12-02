@@ -8,6 +8,9 @@ from misc import get_zip_assets
 
 
 class Rule:
+    """
+    Represents a behavior for your settings.
+    """
     from classes.Editor import Editor, ChangelessEditor
 
     def __init__(self, mod_matcher: Matcher, pack_matcher: Matcher, editor: type(Editor),
