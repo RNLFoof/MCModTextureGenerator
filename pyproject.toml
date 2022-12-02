@@ -7,3 +7,8 @@ name = "lumache"
 authors = [{name = "Graziella", email = "graziella@lumache"}]
 dynamic = ["version", "description"]
 default_branch = "main"
+
+[project.optional-dependencies]
+doc = [
+    "sphinx~=4.2.0",
+]
